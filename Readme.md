@@ -83,4 +83,62 @@ app.Run(async (context) =>
 
 ### <a name="2_0"></a> Map
 
+1. Используется для сопоставления пути запроса с конкретным делегатом, который будет обрабатывать запрос.
+
+```C#
+public void Configure(IApplicationBuilder app)
+{
+    app.Map("/index", Index => //Маршрут /index обработка будет в методе Index
+    {
+        await index.Map("/title", Title); //Маршрут /index/title обработка будет в методе Title 
+        await index.Map("/archive", Archive); //Маршрут /index/archive обработка будет в методе Archive 
+    }); 
+    app.Map("/about", About); //Маршрут /about обработка будет в методе About 
+ 
+    app.Run(async (context) => //Если переданный путь не определён
+    {
+        await context.Response.WriteAsync("Page Not Found");
+    });
+}
+ 
+private static void Index(IApplicationBuilder app)
+{
+    app.Run(async context =>
+    {
+        await context.Response.WriteAsync("Index");
+    });
+}
+private static void Title(IApplicationBuilder app)
+{
+    app.Run(async context =>
+    {
+        await context.Response.WriteAsync("Title");
+    });
+}
+private static void Archive(IApplicationBuilder app)
+{
+    app.Run(async context =>
+    {
+        await context.Response.WriteAsync("Archive");
+    });
+}
+private static void About(IApplicationBuilder app)
+{
+    app.Run(async context =>
+    {
+        await context.Response.WriteAsync("About");
+    });
+}
+```
+
 ### <a name="2_1"></a> MapWhen
+
+1. Передаёт управление делегату, если передаваемая функция возвращает **true**. Является более "умной" реализацией ```.Map```.
+
+```C#
+app.MapWhen(context => { //если сработает условие, то передём управление делегату hendleId
+        return context.Request.Query.ContainsKey("id") && context.Request.Query["id"] == "5";
+    }, HandleId);
+```
+
+## <a name="3"></a> Создание компонентов middleware
