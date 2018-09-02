@@ -14,6 +14,7 @@
     * [MapWhen](#2_1)
 * [Создание компонентов middleware](#3)
 * [IHostingEnvironment и окружение](#4)
+* [OWIN](#5)
 
 ## <a name="0"></a> Конвейер обработки запроса и middleware 
 
@@ -217,3 +218,7 @@ public void Configure(IApplicationBuilder app)
     1. Development
     2. Staging
     3. Production
+
+## <a name="5"></a> OWIN
+
+1. Спецификация **OWIN** (*Open Web Interface for .NET*) позволяет **отвязать веб-приложение** от конкретного веб-сервера и позволяет создать **самохостирующееся приложение**, определяет механизм использования компонентов **middleware** для обработки конкретных запросов и отправки ответа.
