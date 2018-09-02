@@ -15,6 +15,10 @@
 * [Создание компонентов middleware](#3)
 * [IHostingEnvironment и окружение](#4)
 * [OWIN](#5)
+* [Состояние приложения. Куки. Сессии](#6)
+    * [HttpContext.Items](#6_0)
+    * [Куки](#6_1)
+    * [Сессии](#6_2)
 
 ## <a name="0"></a> Конвейер обработки запроса и middleware 
 
@@ -222,3 +226,62 @@ public void Configure(IApplicationBuilder app)
 ## <a name="5"></a> OWIN
 
 1. Спецификация **OWIN** (*Open Web Interface for .NET*) позволяет **отвязать веб-приложение** от конкретного веб-сервера и позволяет создать **самохостирующееся приложение**, определяет механизм использования компонентов **middleware** для обработки конкретных запросов и отправки ответа.
+
+## <a name="6"></a> Состояние приложения. Куки. Сессии
+
+### <a name="6_0"></a> HttpContext.Items
+
+1. **После завершения** запроса все данные в ```HttpContext.Items``` **удаляются**.
+2. **Подходит для данных**, которые связаны с запросом.
+3. Можно использовать для передачи данных между компонентами middleware.
+
+```C#
+app.Use(async (context, next) =>
+{
+    context.Items["text"] = "Text from HttpContext.Items";
+    await next.Invoke();
+});
+
+app.Run(async (context) =>
+{
+    context.Response.ContentType = "text/html; charset=utf-8";
+    await context.Response.WriteAsync($"Текст: {context.Items["text"]}");
+});
+```
+
+### <a name="6_1"></a> Куки
+
+1. Максимальный объём, который можно передать равняется 4096 байт.
+2. Для получения куки по ключу используется метод ```context.Request.Cookies["name"]```
+3. Для добавления/удаления куки используется метод ```context.Response.Cookies.Append("nameCookie", "valueCookie")```.
+   
+### <a name="6_2"></a> Сессии
+
+1. **Используется для сохранения** временных данных, которые доступны, пока пользователь работает с приложением.
+2. По умолчанию, промежуток времени действия сессии равен 20 минутам.
+3. Для взаимодействия с сессиями используются пакеты ```Microsoft.AspNetCore.Session``` и ```Microsoft.Extensions.Caching.Memory```.
+4. Cессии работают поверх объекта ```IDistributedCache```.
+5. Каждая сессия имеет свой идентификатор, который сохраняется в куки. По умолчанию эти куки имеют название **.AspNet.Session**.
+
+```C#
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddDistributedMemoryCache();
+    services.AddSession();
+}
+
+public void Configure(IApplicationBuilder app)
+{
+    app.UseSession();
+    app.Run(async (context) =>
+    {
+        if(context.Session.Keys.Contains("name"))
+            await context.Response.WriteAsync($"Hello {context.Session.GetString("name")}!");
+        else
+        {
+            context.Session.SetString("name", "Tom");
+            await context.Response.WriteAsync("Hello World!");
+        }
+    });
+}
+```
