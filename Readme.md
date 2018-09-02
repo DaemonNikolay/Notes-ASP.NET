@@ -201,3 +201,17 @@ public void Configure(IApplicationBuilder app)
 ```
 
 ![Схема последовательности выполнения компонентов](img/0.png)
+
+## IHostingEnvironment и окружение
+
+1. Данный интерфейс имеет ряд свойств:
+    1. ```ApplicationName``` - возвращает имя приложения
+    2. ```EnvironmentName``` - возвращает описание среды, в которой хостируется приложение
+    3. ```ContentRootPath``` - возвращает путь к корневой директории приложения
+    4. ```WebRootPath``` - возвращает путь к директории, в которой хранится статический контент (обычно директория **wwwroot**)
+    5. ```ContentRootFileProvider``` - возвращает реализацию интерфейса **Microsoft.AspNetCore.FileProviders.IFileProvider**, которая может использоваться для чтения файлов из директории ContentRootPath
+    6. ```WebRootFileProvider``` - возвращает реализацию интерфейса **Microsoft.AspNetCore.FileProviders.IFileProvider**, которая может использоваться для чтения файлов из директории WebRootPath
+2. Приложение имеет **три описания среда**:
+    1. Development
+    2. Staging
+    3. Production
