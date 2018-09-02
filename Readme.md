@@ -142,3 +142,47 @@ app.MapWhen(context => { //если сработает условие, то пе
 ```
 
 ## <a name="3"></a> Создание компонентов middleware
+
+1. Компонент **middleware** представляет из себя класс C#, содержащий обязательно метод ``` public async Task InvokeAsync(HttpContext context)()```.
+2. Класс **middleware** должен иметь конструктор, который принимает параметр типа **RequestDelegate**.
+3. В классе должен быть определён метод, который должен называться ```Invoke``` или ```InvokeAsync```.
+
+```C#
+public class TokenMiddleware
+{
+    private readonly RequestDelegate _next;
+ 
+    public TokenMiddleware(RequestDelegate next)
+    {
+        this._next = next;
+    }
+ 
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var token = context.Request.Query["token"];
+        if (token!="12345678")
+        {
+            context.Response.StatusCode = 403;
+            await context.Response.WriteAsync("Token is invalid");
+        }
+        else
+        {
+            await _next.Invoke(context);
+        }
+    }
+}
+```
+
+4. Для использования самопального компонента используется ```.UseMiddleware<NameMiddleware>``` методе ```Confugure()```.
+5. Для встраивания компонентов используются специальные методы расширения, для этого создаётся отдельный компонент со статическим методом типа **IApplicationBuilder** и названием расширения.
+
+```C#
+public static class TokenExtensions
+{
+    public static IApplicationBuilder UseToken(this IApplicationBuilder builder)
+    {
+        return builder.UseMiddleware<TokenMiddleware>();
+    }
+}
+```
+
