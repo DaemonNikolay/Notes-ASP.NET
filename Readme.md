@@ -186,3 +186,6 @@ public static class TokenExtensions
 }
 ```
 
+6. Выполнение компонента **middleware** делится на два этапа
+    1. Код **ДО** ```await next.Invoke(context)```.
+    2. Код **ПОСЛЕ** ```await next.Invoke(context)```.
