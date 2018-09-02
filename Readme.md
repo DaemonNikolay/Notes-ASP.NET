@@ -12,6 +12,8 @@
 * [Методы Map и MapWhen](#2)
     * [Map](#2_0)
     * [MapWhen](#2_1)
+* [Создание компонентов middleware](#3)
+* [IHostingEnvironment и окружение](#4)
 
 ## <a name="0"></a> Конвейер обработки запроса и middleware 
 
@@ -202,7 +204,7 @@ public void Configure(IApplicationBuilder app)
 
 ![Схема последовательности выполнения компонентов](img/0.png)
 
-## IHostingEnvironment и окружение
+## <a name="4"></a> IHostingEnvironment и окружение
 
 1. Данный интерфейс имеет ряд свойств:
     1. ```ApplicationName``` - возвращает имя приложения
