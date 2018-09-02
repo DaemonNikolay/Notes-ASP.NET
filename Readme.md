@@ -189,3 +189,15 @@ public static class TokenExtensions
 6. Выполнение компонента **middleware** делится на два этапа
     1. Код **ДО** ```await next.Invoke(context)```.
     2. Код **ПОСЛЕ** ```await next.Invoke(context)```.
+7. Последовательность выполнения компонентов зависит от их физического расположения в коде (1->2->3->...->n).
+
+```C#
+public void Configure(IApplicationBuilder app)
+{
+    app.UseMiddleware<ErrorHandlingMiddleware>();
+    app.UseMiddleware<AuthenticationMiddleware>();
+    app.UseMiddleware<RoutingMiddleware>();
+}
+```
+
+![Схема последовательности выполнения компонентов](img/0.png)
